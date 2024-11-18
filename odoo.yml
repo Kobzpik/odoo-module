@@ -1,0 +1,5 @@
+- module: odoo
+  log:
+    enabled: true
+    var.paths: ["/var/log/odoo/odoo17.log"]
+

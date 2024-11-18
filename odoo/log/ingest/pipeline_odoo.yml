@@ -1,0 +1,77 @@
+description: "Pipeline for parsing Odoo logs"
+processors:
+  - set:
+      field: event.ingested
+      value: '{{_ingest.timestamp}}'
+
+  - rename:
+      field: message
+      target_field: event.original
+
+  - grok:
+      field: event.original
+      patterns:
+        - "%{TIMESTAMP_ISO8601:odoo.timestamp} %{NUMBER:process_id} %{LOGLEVEL:log.level} %{DATA:odoo.database} %{DATA:odoo.source}: %{GREEDYDATA:odoo.message_details}"
+        - "%{TIMESTAMP_ISO8601:odoo.timestamp} %{NUMBER:process_id} %{LOGLEVEL:log.level} %{DATA:odoo.database} %{DATA:odoo.source}: %{IP:client_ip} - - \\[%{HTTPDATE:http.request.time}\\] \"%{WORD:http.request.method} %{DATA:http.request.url} HTTP/%{NUMBER:http.version}\" %{NUMBER:http.response.status_code:long} - %{GREEDYDATA:user_agent.original}"
+
+  - date:
+      field: odoo.timestamp
+      target_field: '@timestamp'
+      formats:
+        - "ISO8601"
+
+  - remove:
+      field: odoo.timestamp
+
+  - set:
+      field: event.created
+      copy_from: '@timestamp'
+
+  - set:
+      field: event.kind
+      value: "event"
+
+  - set:
+      field: event.category
+      value: "application"
+
+  - set:
+      field: event.type
+      value: "error"
+      if: "ctx?.log?.level == 'ERROR'"
+
+  - user_agent:
+      field: user_agent.original
+      ignore_missing: true
+
+  - geoip:
+      field: client_ip
+      target_field: source.geo
+      ignore_missing: true
+
+  - append:
+      field: related.ip
+      value: "{{client_ip}}"
+      if: "ctx?.client_ip != null"
+
+  - script:
+      lang: painless
+      description: "Remove null fields"
+      source: |
+        void handleMap(Map map) {
+          for (def entry : map.entrySet()) {
+            if (entry.getValue() instanceof Map) {
+              handleMap((Map) entry.getValue());
+            }
+            if (entry.getValue() == null) {
+              map.remove(entry.getKey());
+            }
+          }
+        }
+        handleMap(ctx);
+
+on_failure:
+  - set:
+      field: error.message
+      value: '{{ _ingest.on_failure_message }}'
+
