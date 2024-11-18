@@ -50,8 +50,8 @@ filebeat.inputs:
 
   # Optional additional fields. These fields can be freely picked
   # to add additional information to the crawled log files for filtering
-  fields:
-    server_id: test-server
+  #fields:
+  #  server_id: test-server
       
       # fields_under_root: true
   #  review: 1
@@ -89,7 +89,7 @@ setup.template.settings:
 # Optional fields that you can specify to add additional information to the
 # output.
 fields:
-  env: staging_test
+  hostname: hostname_goes_here
 
 # ================================= Dashboards =================================
 # These settings control loading the sample dashboards to the Kibana index. Loading
@@ -158,7 +158,7 @@ setup.kibana:
 # ------------------------------ Logstash Output -------------------------------
 output.logstash:
   # The Logstash hosts
-    hosts: ["192.168.56.103:5044"]
+    hosts: ["13.229.18.83:5044"]
     
 
   # Optional SSL. By default is off.
