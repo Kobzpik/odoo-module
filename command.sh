@@ -10,7 +10,7 @@ read -p "Server name: " SERVER_NAME
 sed -i "s/hostname_goes_here/$SERVER_NAME/g" /tmp/odoo-module/filebeat.yml
 
 # copy filebeat.yml to /etc/filebeat/filebeat.yml
-sudo cp /tmp/odoo-module/filebeat.yml /etc/filebeat/filebeat.yml
+#sudo cp /tmp/odoo-module/filebeat.yml /etc/filebeat/filebeat.yml
 
 # restart the filebeat service
 sudo systemctl restart filebeat
