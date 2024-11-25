@@ -11,4 +11,3 @@ processors:
       target: ''
       fields:
         ecs.version: 1.12.0
-

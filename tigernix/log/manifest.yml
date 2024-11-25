@@ -1,0 +1,28 @@
+module_version: "1.0"
+
+var:
+  - name: path
+    default:
+      - /var/log/tigernix13/tigernix.log
+        #- name: tags
+        # defaue:lt: [cef, forwarded]
+        #- name:e: syslog_host
+        # defaue:lt: localhost
+        #- name:e: syslog_port
+        # defaue:lt: 9003
+        #- name:e: input
+        #  defaue:lt: syslog
+        #- name:e: internal_zones
+        #- name:e: external_zones
+        #- name:e: timezone
+
+        #ingest_pipeline:
+        #  - ingest/pipeline.yml
+        #  - ingest/fp-pipeline.yml
+        #  - ingest/cp-pipeline.yml
+ingest_pipeline: ingest/pipeline_odoo.yml
+input: config/input.yml
+
+requires.processors:
+  - name: geoip
+    plugin: ingest-geoip
