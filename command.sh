@@ -1,10 +1,28 @@
+#!/bin/bash
+
 ########################################################################
 ########   script for install odoo module   ############################
 ########################################################################
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+# Function to check if the input contains uppercase letters or spaces
+contains_invalid_characters() {
+    [[ "$1" =~ [A-Z] || "$1" =~ [[:space:]] ]]
+}
+
 # Prompt the user to enter the server name
-echo "Please enter the server name (Lowercase and no space):"
-read -p "Server name: " SERVER_NAME
+while true; do
+    echo "Please enter the server name (lowercase and no spaces):"
+    read -p "Server name: " SERVER_NAME
+
+    if contains_invalid_characters "$SERVER_NAME"; then
+        echo "Error: Server name contains uppercase letters or spaces. Please enter a valid server name."
+    else
+        break
+    fi
+done
 
 # add the server name to the filebeat.yml
 sed -i "s/hostname_goes_here/$SERVER_NAME/g" /tmp/odoo-module/filebeat.yml
@@ -16,7 +34,7 @@ sudo cp /tmp/odoo-module/filebeat.yml /etc/filebeat/filebeat.yml
 sudo systemctl restart filebeat
 
 # install the odoo module
-sudo mv /tmp/odoo-module/tigernix.yml /etc/filebeat/modules.d/tigernix.yml
+sudo cp /tmp/odoo-module/tigernix.yml /etc/filebeat/modules.d/tigernix.yml
 
 # enable the odoo module
 sudo filebeat modules enable tigernix
@@ -25,4 +43,7 @@ sudo filebeat modules enable tigernix
 sudo cp /tmp/odoo-module/tigernix /usr/share/filebeat/module/tigernix
 
 # restart the filebeat service
-sudo sudo systemctl restart filebeat
+sudo systemctl restart filebeat
+
+# Display success message in green text
+echo -e "\e[32mModule installation completed successfully!\e[0m"
