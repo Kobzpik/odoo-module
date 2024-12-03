@@ -40,7 +40,7 @@ sudo cp /tmp/odoo-module/tigernix.yml /etc/filebeat/modules.d/tigernix.yml
 sudo filebeat modules enable tigernix
 
 # configure odoo module
-sudo cp /tmp/odoo-module/tigernix /usr/share/filebeat/module/tigernix
+sudo cp -r /tmp/odoo-module/tigernix /usr/share/filebeat/module/tigernix
 
 # restart the filebeat service
 sudo systemctl restart filebeat
